@@ -32,10 +32,30 @@ class NFA extends Graph {
     return newNodeFinish;
   }
 
+  connectGraphAfterOwn( connectingGraph:NFA ){
+    // 自身の受理状態をまとめる
+    const thisGraphNodeFinish = this.bindNodesFinish();
+    if( thisGraphNodeFinish === undefined ){
+      throw new Error("finish node is not found");
+    }
 
+    // 自身の受理状態を解除する
+    thisGraphNodeFinish.isFinish = false;
+
+    // つなげるグラフの初期状態を解除する
+    const connectingGraphNodeStart = connectingGraph.nodeStart
+    connectingGraphNodeStart.isStart = false;
+
+    // node, edgeをmergeする。
+    this.nodes.push(...connectingGraph.nodes);
+    this.edges.push(...connectingGraph.edges);
+
+    // 自身の受理状態(だったもの)からつなげるグラフの初期状態(だったもの)へのε遷移を追加する。
+    this.addEdge(thisGraphNodeFinish, connectingGraphNodeStart, "ε");
+  }
 
   /*
-  replaceNodeWithGrapth(nodeId:number, graph:NFA):boolean{
+  replaceNodeWithGraph(nodeId:number, graph:NFA):boolean{
     // 置き換えるグラフの受理状態を一つにまとめておく
     const nodeFinishId = graph.bindNodesFinish();
     if( nodeFinish === undefined ){

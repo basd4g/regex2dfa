@@ -36,16 +36,20 @@ class CreateNFA {
 
 export default (regExpString: string):NFA => {
   const createNfa = new CreateNFA();
-
   regExpString.split('').forEach( (c,idx) => {
     createNfa.addCharactor(c);
   });
-
   createNfa.finalize();
 
-  createNfa.graph.addNode(true);
-  
-  createNfa.graph.bindNodesFinish();
+  const createNfa2 = new CreateNFA();
+  regExpString.split('').forEach( (c,idx) => {
+    createNfa2.addCharactor(c);
+  });
+  createNfa2.finalize();
+
+  createNfa.graph.connectGraphAfterOwn( createNfa2.graph );
+
+
 
   return createNfa.graph;
 }
