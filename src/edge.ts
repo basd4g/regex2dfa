@@ -16,10 +16,12 @@ class Edge {
   get name():string {
     return `e${this.id}`;
   }
-  print():string{
+}
+class EdgeGraphviz extends Edge {
+  get graphvizString():string{
     return `${this.from.name} -> ${this.to.name} [label = "${this.value}"];`;
   }
 
 }
 
-export default Edge;
+export default EdgeGraphviz;
