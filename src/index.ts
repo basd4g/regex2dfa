@@ -1,24 +1,12 @@
+import regExpString2NFA from "./regExpString2NFA";
 import Graph from "./graph";
 
-const graph = new Graph();
-
-const nodeStart = graph.nodeStart
-if(nodeStart === undefined){
+const input:string = process.argv[2];
+if( typeof input !== 'string' || input.length === 0 ){
   process.exit(0);
 }
-const node0 = nodeStart.id;
 
-const input = process.argv[2];
 
-let nodeBefore:number = node0;
-let nodeAfter:number;
+const NFA = regExpString2NFA(input);
 
-input.split('').forEach( (c,idx) => {
-  const isFinish = input.length-1 === idx;
-  nodeAfter = graph.addNode(isFinish);
-  graph.addEdge(nodeBefore, nodeAfter, c);
-  
-  nodeBefore = nodeAfter;
-});
-
-console.log(graph.graphvizString);
+console.log(NFA.graphvizString);
