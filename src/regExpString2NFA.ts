@@ -77,8 +77,6 @@ export default (regExpString: string):Graph => {
     nfa.addCharactor(c);
   });
 
-  nfa.cloneNode(3);
-
   nfa.finalize();
 
   return nfa.graph;
