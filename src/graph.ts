@@ -30,17 +30,21 @@ class Graph {
   getNode(id: number): Node|undefined {
     return  this.nodes.find( n => { return n.id === id });
   }
+  
+  getEdge(id: number): Edge|undefined {
+    return this.edges.find( e => { return e.id === id });
+  }
 
-  addEdge(fromId:number, toId:number, value:string):number|null{
+  addEdge(fromId:number, toId:number, value:string):number|undefined{
     const nodeFrom = this.getNode(fromId);
     const nodeTo = this.getNode(toId);
     if ( nodeFrom === undefined || nodeTo === undefined ){
       // id is invalid
-      return null;
+      return undefined;
     }
     if( value.length !== 1 ){
       // value is invalid
-      return null;
+      return undefined;
     }
 
     const edge = new Edge(nodeFrom, nodeTo, value);
@@ -67,6 +71,14 @@ class Graph {
   
   get nodesFinish():Node[] {
     return this.nodes.filter( node => { return node.isFinish == true });
+  }
+
+  edgesFrom(nodeId:number):Edge[] {
+    return this.edges.filter( edge => { return edge.from.id === nodeId });
+  }
+
+  edgesTo(nodeId:number):Edge[] {
+    return this.edges.filter( edge => { return edge.to.id === nodeId });
   }
 }
 
