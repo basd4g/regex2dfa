@@ -1,0 +1,19 @@
+{
+  "name": "regex2dfa",
+  "version": "1.0.0",
+  "description": "Convert Regular Expression into Deterministic Finite Automaton.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/basd4g/regex2dfa.git"
+  },
+  "author": "baskk4.dt@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/basd4g/regex2dfa/issues"
+  },
+  "homepage": "https://github.com/basd4g/regex2dfa#readme"
+}
