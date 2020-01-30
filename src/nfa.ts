@@ -48,6 +48,31 @@ class NFA extends Graph {
     });
     return newNodeFinishId;
   }
+
+
+
+  /*
+  replaceNodeWithGrapth(nodeId:number, graph:NFA):boolean{
+    // 置き換えるグラフの受理状態を一つにまとめておく
+    const nodeFinishId = graph.bindNodesFinish();
+    if( nodeFinish === undefined ){
+      return false;
+    }
+    const nodeFinish = this.getNode(nodeFinishId)
+    if( nodeFinish === undefined ){
+      return false;
+    }
+
+    // 置き換えるグラフの受理状態を解除
+    nodeFinish.isFinish = false;
+
+
+    const cloneNodeId = this.cloneNode(nodeId);
+    if( cloneNodeId === undefined ){
+      return false;
+    }
+  }
+  */
 }
 
 export default NFA;
