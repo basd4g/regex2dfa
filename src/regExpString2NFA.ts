@@ -1,23 +1,49 @@
 import Graph from "./graph";
-export default (regExpString: string):Graph => {
-  const graph = new Graph();
 
-  const nodeStart = graph.nodeStart
-  if(nodeStart === undefined){
-    throw new Error("start node is not generated");
-    return graph;
+class NFA {
+  graph:Graph;
+  newestNodeId:number;
+  
+  constructor() {
+    this.graph = new Graph;
+    const nodeStart = this.graph.nodeStart;
+    if( nodeStart === undefined){
+      throw new Error("start node is not generated");
+      return;
+    }
+    this.newestNodeId = nodeStart.id;
   }
 
-  let nodeBefore:number = nodeStart.id;
-  let nodeAfter:number;
+  addCharactor(str:string):boolean{
+   const nodeId = this.graph.addNode(false);
+   const successAddEdge = this.graph.addEdge(this.newestNodeId, nodeId, str);
+   if(successAddEdge === null){
+     return false;
+   }
+   this.newestNodeId = nodeId;
+   return true;
+  }
+
+  finalize():boolean{
+    const nodeIdFinish = this.newestNodeId;
+    const nodeFinish = this.graph.getNode(nodeIdFinish);
+    if( nodeFinish === undefined ){
+      return false
+    }
+    nodeFinish.isFinish = true;
+    return true;
+  }
+}
+
+
+export default (regExpString: string):Graph => {
+  const nfa = new NFA();
 
   regExpString.split('').forEach( (c,idx) => {
-    const isFinish = regExpString.length-1 === idx;
-    nodeAfter = graph.addNode(isFinish);
-    graph.addEdge(nodeBefore, nodeAfter, c);
-  
-    nodeBefore = nodeAfter;
+    nfa.addCharactor(c);
   });
 
-  return graph;
+  nfa.finalize();
+
+  return nfa.graph;
 }

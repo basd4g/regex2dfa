@@ -27,7 +27,7 @@ class Graph {
     return successDelete;
   }
 
-  private getNode(id: number): Node|undefined {
+  getNode(id: number): Node|undefined {
     return  this.nodes.find( n => { return n.id === id });
   }
 
