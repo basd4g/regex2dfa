@@ -1,7 +1,8 @@
+import Node from "./node";
 import NFA from "./nfa";
 class CreateNFA {
   graph:NFA;
-  newestNodeId:number;
+  newestNode:Node;
   
   constructor() {
     this.graph = new NFA();
@@ -10,27 +11,22 @@ class CreateNFA {
       throw new Error("start node is not generated");
       return;
     }
-    this.newestNodeId = nodeStart.id;
+    this.newestNode = nodeStart;
   }
 
   addCharactor(str:string):boolean{
-   const nodeId = this.graph.addNode(false);
-   const successAddEdge = this.graph.addEdge(this.newestNodeId, nodeId, str);
+   const node = this.graph.addNode(false);
+   const successAddEdge = this.graph.addEdge(this.newestNode, node, str);
    if(successAddEdge === null){
      return false;
    }
-   this.newestNodeId = nodeId;
+   this.newestNode = node;
    return true;
   }
 
-  finalize():boolean{
-    const nodeIdFinish = this.newestNodeId;
-    const nodeFinish = this.graph.getNode(nodeIdFinish);
-    if( nodeFinish === undefined ){
-      return false
-    }
+  finalize(){
+    const nodeFinish = this.newestNode;
     nodeFinish.isFinish = true;
-    return true;
   }
 
 

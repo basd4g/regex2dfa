@@ -10,16 +10,16 @@ class Graph {
     this.edges = [];
   }
 
-  addNode(isFinish:boolean):number{
+  addNode(isFinish:boolean):Node{
     const node = new Node(false, isFinish);
     this.nodes.push(node);
-    return node.id;
+    return node;
   }
 
-  deleteNode(id:number):boolean{
+  deleteNode(node:Node):boolean{
     const lengthBefore = this.nodes.length;
 
-    this.nodes = this.nodes.filter( node => { return node.id !== id });
+    this.nodes = this.nodes.filter( n => { return n.id !== node.id });
 
     const lengthAfter = this.nodes.length;
     
@@ -27,37 +27,22 @@ class Graph {
     return successDelete;
   }
 
-  getNode(id: number): Node|undefined {
-    return  this.nodes.find( n => { return n.id === id });
-  }
-  
-  getEdge(id: number): Edge|undefined {
-    return this.edges.find( e => { return e.id === id });
-  }
-
-  addEdge(fromId:number, toId:number, value:string):number|undefined{
-    const nodeFrom = this.getNode(fromId);
-    const nodeTo = this.getNode(toId);
-    if ( nodeFrom === undefined || nodeTo === undefined ){
-      // id is invalid
-      return undefined;
-    }
+  addEdge(nodeFrom:Node, nodeTo:Node, value:string):Edge {
     if( value.length !== 1 ){
-      // value is invalid
-      return undefined;
+      throw new Error("value is a charactor");
     }
 
     const edge = new Edge(nodeFrom, nodeTo, value);
     this.edges.push(edge);
 
-    return edge.id;
+    return edge;
 
   }
 
-  deleteEdge(id:number):boolean{
+  deleteEdge(edge:Edge):boolean{
     const lengthBefore = this.edges.length;
 
-    this.edges = this.edges.filter( edge => { return edge.id !== id });
+    this.edges = this.edges.filter( e => { return e.id !== edge.id });
 
     const lengthAfter = this.nodes.length;
     
@@ -65,20 +50,24 @@ class Graph {
     return successDelete;
   }
 
-  get nodeStart():Node|undefined {
-    return this.nodes.find( node => { return node.isStart == true });
+  get nodeStart():Node {
+    const nodeStart = this.nodes.find( node => { return node.isStart == true });
+    if( nodeStart === undefined ){
+      throw new Error("start node is not found");
+    }
+    return nodeStart;
   }
   
   get nodesFinish():Node[] {
     return this.nodes.filter( node => { return node.isFinish == true });
   }
 
-  edgesFrom(nodeId:number):Edge[] {
-    return this.edges.filter( edge => { return edge.from.id === nodeId });
+  edgesFrom(node:Node):Edge[] {
+    return this.edges.filter( edge => { return edge.from.id === node.id });
   }
 
-  edgesTo(nodeId:number):Edge[] {
-    return this.edges.filter( edge => { return edge.to.id === nodeId });
+  edgesTo(node:Node):Edge[] {
+    return this.edges.filter( edge => { return edge.to.id === node.id });
   }
 }
 

@@ -1,52 +1,35 @@
 import Graph from "./graph";
+import Node from "./node";
 
 class NFA extends Graph {
   // 存在するノードからε遷移するノードを作る。もとのノードからの有効辺は新しいノードが始点となるように付け替える。
-  cloneNode(originNodeId:number):number|undefined{
-    const originNode = this.getNode(originNodeId);
-    if( originNode === undefined ){
-      return undefined;
-    }
+  cloneNode(originNode:Node):Node {
     const newNodeIsFinish = originNode.isFinish;
-    const newNodeId = this.addNode(newNodeIsFinish);
-    if( newNodeId === undefined){
-      return undefined;
-    }
-    const newNode = this.getNode(newNodeId);
-    if( newNode === undefined ){
-      return undefined;
-    }
+    const newNode = this.addNode(newNodeIsFinish);
 
-    const edgeId = this.addEdge(originNode.id, newNode.id, "ε");
-    if( edgeId === undefined ){
-      return undefined;
-    }
-    const edge = this.getEdge(edgeId);
-    if( edge === undefined ){
-      return undefined;
-    }
+    const edge = this.addEdge(originNode, newNode, "ε");
 
-    const edgesFrom = this.edgesFrom(originNodeId);
+    const edgesFrom = this.edgesFrom(originNode);
     edgesFrom.forEach( e => {
       if( e.id !== edge.id ){
         e.from = newNode;
       }
     });
-    return newNodeId;
+    return newNode;
   }
 
-  bindNodesFinish():number|undefined {
+  bindNodesFinish():Node|undefined {
     const nodesFinish = this.nodesFinish;
     if( nodesFinish.length === 0 ){
       return undefined;
     }
-    const newNodeFinishId = this.addNode(true);
+    const newNodeFinish = this.addNode(true);
 
     nodesFinish.forEach( nodeFinish => {
       nodeFinish.isFinish = false;
-      this.addEdge( nodeFinish.id, newNodeFinishId, "ε" );
+      this.addEdge( nodeFinish, newNodeFinish, "ε" );
     });
-    return newNodeFinishId;
+    return newNodeFinish;
   }
 
 
