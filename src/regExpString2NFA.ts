@@ -47,5 +47,9 @@ export default (regExpString: string):NFA => {
 
   createNfa.finalize();
 
+  createNfa.graph.addNode(true);
+  
+  createNfa.graph.bindNodesFinish();
+
   return createNfa.graph;
 }

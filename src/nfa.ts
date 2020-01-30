@@ -34,6 +34,20 @@ class NFA extends Graph {
     });
     return newNodeId;
   }
+
+  bindNodesFinish():number|undefined {
+    const nodesFinish = this.nodesFinish;
+    if( nodesFinish.length === 0 ){
+      return undefined;
+    }
+    const newNodeFinishId = this.addNode(true);
+
+    nodesFinish.forEach( nodeFinish => {
+      nodeFinish.isFinish = false;
+      this.addEdge( nodeFinish.id, newNodeFinishId, "ε" );
+    });
+    return newNodeFinishId;
+  }
 }
 
 export default NFA;
