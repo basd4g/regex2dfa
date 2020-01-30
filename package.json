@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/basd4g/regex2dfa/issues"
   },
-  "homepage": "https://github.com/basd4g/regex2dfa#readme"
+  "homepage": "https://github.com/basd4g/regex2dfa#readme",
+  "dependencies": {
+    "@types/node": "^13.5.2"
+  }
 }
