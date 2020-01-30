@@ -50,10 +50,10 @@ class Graph {
     return successDelete;
   }
 
-  get nodeStart():Node {
+  get nodeStart():Node|undefined {
     const nodeStart = this.nodes.find( node => { return node.isStart == true });
     if( nodeStart === undefined ){
-      throw new Error("start node is not found");
+      return undefined;
     }
     return nodeStart;
   }
