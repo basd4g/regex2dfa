@@ -32,6 +32,16 @@ class CreateNFA {
     return nodeHead;
   }
 
+  addCharactorRepeat(nodeFrom:Node, str:string):Node {
+
+    const nodeLoop = this.addCharactor(nodeFrom, "ε");
+
+    this.graph.addEdge(nodeLoop, nodeLoop, str);
+
+    const nodeAfter = this.addCharactor(nodeLoop, "ε");
+    return nodeAfter;
+  }
+
   finalize(node:Node){
     node.isFinish = true;
   }
