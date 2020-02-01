@@ -16,9 +16,9 @@ class CreateNFA {
     return nodeStart;
   }
 
-  addCharactor(nodeFrom:Node, str:string):Node {
+  addCharactor(nodeFrom:Node, charactor:string):Node {
    const node = this.graph.addNode(false);
-   this.graph.addEdge(nodeFrom, node, str);
+   this.graph.addEdge(nodeFrom, node, charactor);
    return node;
   }
 
@@ -40,11 +40,11 @@ class CreateNFA {
     return nodeHead;
   }
 
-  addCharactorRepeat(nodeFrom:Node, str:string):Node {
+  addCharactorRepeat(nodeFrom:Node, charactor:string):Node {
 
     const nodeLoop = this.addEpsilonTransitionNode(nodeFrom);
 
-    this.graph.addEdge(nodeLoop, nodeLoop, str);
+    this.graph.addEdge(nodeLoop, nodeLoop, charactor);
 
     const nodeAfter = this.addEpsilonTransitionNode(nodeLoop);
     return nodeAfter;
