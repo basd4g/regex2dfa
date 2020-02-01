@@ -40,16 +40,6 @@ class CreateNFA {
     return nodeHead;
   }
 
-  addCharactorRepeat(nodeFrom:Node, charactor:string):Node {
-
-    const nodeLoop = this.addEpsilonTransitionNode(nodeFrom);
-
-    this.graph.addEdge(nodeLoop, nodeLoop, charactor);
-
-    const nodeAfter = this.addEpsilonTransitionNode(nodeLoop);
-    return nodeAfter;
-  }
-
   addStringRepeat(nodeFrom:Node, str:string):Node {
     
     const nodeLoop = this.addEpsilonTransitionNode(nodeFrom);
