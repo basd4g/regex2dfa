@@ -52,6 +52,19 @@ class CreateNFA {
     return nodeAfter;
   }
 
+  addStringOr(nodeFrom:Node, string0:string, string1:string):Node {
+    const nodeBeforeRoot0 = this.addEpsilonTransitionNode(nodeFrom);
+    const nodeBeforeRoot1 = this.addEpsilonTransitionNode(nodeFrom);
+
+    const nodeAfterRoot0 = this.addString(nodeBeforeRoot0, string0);
+    const nodeAfterRoot1 = this.addString(nodeBeforeRoot1, string1);
+
+    const nodeAfter = this.addEpsilonTransitionNode(nodeAfterRoot0);
+    this.addEpsilonTransitionEdge(nodeAfterRoot1, nodeAfter);
+
+    return nodeAfter;
+  }
+
   finalize(node:Node){
     node.isFinish = true;
   }
@@ -62,7 +75,7 @@ export default (regExpString: string):NFA => {
   const createNfa = new CreateNFA();
   let nodeHead:Node = createNfa.nodeStart;
 
-  nodeHead = createNfa.addStringRepeat(nodeHead, regExpString);
+  nodeHead = createNfa.addStringOr(nodeHead, regExpString, regExpString);
 
   createNfa.finalize(nodeHead);
 
