@@ -42,10 +42,22 @@ class CreateNFA {
     return nodeAfter;
   }
 
+  addStringRepeat(nodeFrom:Node, str:string):Node {
+    
+    const nodeLoop = this.addCharactor(nodeFrom, "ε");
+
+    const nodeEndStr = this.addString(nodeLoop, str);
+
+    this.graph.addEdge(nodeEndStr, nodeLoop, "ε");
+
+    const nodeAfter = this.addCharactor(nodeEndStr, "ε");
+
+    return nodeAfter;
+  }
+
   finalize(node:Node){
     node.isFinish = true;
   }
-
 }
 
 
@@ -53,7 +65,7 @@ export default (regExpString: string):NFA => {
   const createNfa = new CreateNFA();
   let nodeHead:Node = createNfa.nodeStart;
 
-  nodeHead = createNfa.addString(nodeHead, regExpString);
+  nodeHead = createNfa.addStringRepeat(nodeHead, regExpString);
 
   createNfa.finalize(nodeHead);
 
