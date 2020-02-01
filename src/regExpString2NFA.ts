@@ -1,4 +1,5 @@
 import Node from "./node";
+import Edge from "./edge";
 import NFA from "./nfa";
 class CreateNFA {
   graph:NFA;
@@ -21,6 +22,13 @@ class CreateNFA {
    return node;
   }
 
+  addEpsilonTransitionNode(nodeFrom:Node):Node {
+    return this.addCharactor(nodeFrom, "ε");
+  }
+  addEpsilonTransitionEdge(nodeFrom:Node, nodeTo:Node):Edge {
+    return this.graph.addEdge(nodeFrom, nodeTo, "ε");
+  }
+
   addString(nodeFrom:Node, str:string):Node {
     const charactorArray = str.split('');
     let nodeHead = nodeFrom;
@@ -34,24 +42,23 @@ class CreateNFA {
 
   addCharactorRepeat(nodeFrom:Node, str:string):Node {
 
-    const nodeLoop = this.addCharactor(nodeFrom, "ε");
+    const nodeLoop = this.addEpsilonTransitionNode(nodeFrom);
 
     this.graph.addEdge(nodeLoop, nodeLoop, str);
 
-    const nodeAfter = this.addCharactor(nodeLoop, "ε");
+    const nodeAfter = this.addEpsilonTransitionNode(nodeLoop);
     return nodeAfter;
   }
 
   addStringRepeat(nodeFrom:Node, str:string):Node {
     
-    const nodeLoop = this.addCharactor(nodeFrom, "ε");
+    const nodeLoop = this.addEpsilonTransitionNode(nodeFrom);
 
     const nodeEndStr = this.addString(nodeLoop, str);
 
-    this.graph.addEdge(nodeEndStr, nodeLoop, "ε");
+    this.addEpsilonTransitionEdge(nodeEndStr, nodeLoop);
 
-    const nodeAfter = this.addCharactor(nodeEndStr, "ε");
-
+    const nodeAfter = this.addEpsilonTransitionNode(nodeEndStr);
     return nodeAfter;
   }
 
