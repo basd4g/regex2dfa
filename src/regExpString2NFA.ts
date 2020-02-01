@@ -2,55 +2,50 @@ import Node from "./node";
 import NFA from "./nfa";
 class CreateNFA {
   graph:NFA;
-  newestNode:Node;
   
   constructor() {
     this.graph = new NFA();
+  }
+
+  get nodeStart():Node{
     const nodeStart = this.graph.nodeStart;
     if( nodeStart === undefined){
       throw new Error("start node is not generated");
-      return;
     }
-    this.newestNode = nodeStart;
+    return nodeStart;
   }
 
-  addCharactor(str:string):boolean{
+  addCharactor(nodeFrom:Node, str:string):Node {
    const node = this.graph.addNode(false);
-   const successAddEdge = this.graph.addEdge(this.newestNode, node, str);
-   if(successAddEdge === null){
-     return false;
-   }
-   this.newestNode = node;
-   return true;
+   this.graph.addEdge(nodeFrom, node, str);
+   return node;
   }
 
-  finalize(){
-    const nodeFinish = this.newestNode;
-    nodeFinish.isFinish = true;
+  addString(nodeFrom:Node, str:string):Node {
+    const charactorArray = str.split('');
+    let nodeHead = nodeFrom;
+
+    charactorArray.forEach( c => {
+      nodeHead = this.addCharactor(nodeHead, c);
+    });
+
+    return nodeHead;
   }
 
+  finalize(node:Node){
+    node.isFinish = true;
+  }
 
-  
 }
 
 
 export default (regExpString: string):NFA => {
   const createNfa = new CreateNFA();
-  regExpString.split('').forEach( (c,idx) => {
-    createNfa.addCharactor(c);
-  });
-  createNfa.finalize();
+  let nodeHead:Node = createNfa.nodeStart;
 
-  const createNfa2 = new CreateNFA();
-  regExpString.split('').forEach( (c,idx) => {
-    createNfa2.addCharactor(c);
-  });
-  createNfa2.finalize();
+  nodeHead = createNfa.addString(nodeHead, regExpString);
 
-//  createNfa.graph.connectGraphAfterOwn( createNfa2.graph );
-  createNfa.graph.replaceNodeWithGraph(createNfa.graph.nodes[2], createNfa2.graph);
-
-
+  createNfa.finalize(nodeHead);
 
   return createNfa.graph;
 }
