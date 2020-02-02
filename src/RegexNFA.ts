@@ -13,9 +13,17 @@ class RegexNFA extends NFA{
   }
 
   addCharactor(nodeFrom:Node, charactor:string):Node {
-   const node = this.addNode(false);
-   this.addEdge(nodeFrom, node, charactor);
-   return node;
+    const node = this.addNode(false);
+    this.addEdge(nodeFrom, node, charactor);
+    return node;
+  }
+
+  addCharactorRepeat(nodeFrom:Node, charactor:string):Node {
+    const nodeRepeat = this.addEpsilonTransitionNode( nodeFrom );
+    const nodeHead = this.addEpsilonTransitionNode( nodeRepeat );
+    
+    this.addEdge( nodeRepeat, nodeRepeat, charactor);
+    return nodeHead;
   }
 
   addString(nodeFrom:Node, str:string):Node {

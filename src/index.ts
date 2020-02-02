@@ -1,4 +1,5 @@
 import regExpString2NFA from "./regExpString2NFA";
+import indexesOf from "./indexesOf";
 
 const validateParenthesis = (str:string):boolean => {
   let depth:number = 0;
@@ -17,23 +18,6 @@ const validateParenthesis = (str:string):boolean => {
     }
   }
   return depth === 0;
-};
-
-const indexesOf = (string:string, charactor:string):number[] => {
-  const charactors = string.split('')
-  const indexesIncludeInvalid = charactors.map( (c,index) => {
-    if ( c === charactor ){
-      return index;
-    } else {
-      return -1;
-    }
-  });
-
-  const indexes = indexesIncludeInvalid.filter( stringIndex => {
-    return stringIndex !== -1;
-  });
-  
-  return indexes;
 };
 
 const validatePostfixOperator = (str:string, operator:string):boolean => {
