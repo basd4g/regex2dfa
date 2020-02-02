@@ -27,6 +27,8 @@ const validatePostfixOperator = (str:string, operator:string):boolean => {
       return false;
     } else if ( str[index-1] === "(" ) {
       return false;
+    } else if ( str[index-1] === "|" ) {
+      return false;
     }
   }
   return true;

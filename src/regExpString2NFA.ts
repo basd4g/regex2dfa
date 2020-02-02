@@ -22,7 +22,44 @@ const graphCreatorStringInAsterisk = (str:string):RegexNFA => {
   regexNFA.finalize( nodeHead );
 
   return regexNFA;
+};
 
+const graphCreatorStringInAsteriskBar = (str:string):RegexNFA => {
+  const indexOfBar = str.indexOf( '|' );
+  if( indexOfBar === -1 ){
+    return graphCreatorStringInAsterisk( str );
+  }
+
+  const strBeforeBar = str.slice(0, indexOfBar);
+  const strAfterBar = str.slice(indexOfBar+1);
+
+  return connectGraphsOr(
+    graphCreatorStringInAsterisk( strBeforeBar ),
+    graphCreatorStringInAsteriskBar( strAfterBar )
+  );
+}
+
+const connectGraphsOr = ( graph0:RegexNFA, graph1:RegexNFA ):RegexNFA => {
+  const regexNFA = new RegexNFA();
+  let nodeHead = regexNFA.nodeStart;
+
+  nodeHead = regexNFA.addGraphOr(nodeHead, graph0, graph1);
+
+  regexNFA.finalize(nodeHead);
+
+  return regexNFA;
+};
+
+const connectGraphs = ( graphHead:RegexNFA, graphTail:RegexNFA ):RegexNFA => {
+  const regexNFA = new RegexNFA();
+  let nodeHead = regexNFA.nodeStart;
+
+  nodeHead = regexNFA.addGraph(nodeHead, graphHead);
+  nodeHead = regexNFA.addGraph(nodeHead, graphTail);
+
+  regexNFA.finalize(nodeHead);
+
+  return regexNFA;
 };
 
 const graphCreatorString = (str:string):RegexNFA => {
@@ -32,7 +69,8 @@ const graphCreatorString = (str:string):RegexNFA => {
   return regexNFA;
 };
 
+
 export default (regExpString: string):RegexNFA => {
 //  return graphCreatorString(regExpString);
-  return graphCreatorStringInAsterisk( regExpString );
+  return graphCreatorStringInAsteriskBar( regExpString );
 }

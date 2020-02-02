@@ -15,11 +15,12 @@ class NFA extends Graph {
   }
 
   addGraph(nodeFrom:Node, graph:NFA):Node {
-    this.mergeNodes( graph.nodes );
-    this.mergeEdges( graph.edges );
 
     const nodeStarted = graph.resetNodeStart();
     const nodeFinished = graph.resetNodesFinish();
+
+    this.mergeNodes( graph.nodes );
+    this.mergeEdges( graph.edges );
 
     this.addEpsilonTransitionEdge( nodeFrom, nodeStarted );
 
