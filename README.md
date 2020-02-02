@@ -54,6 +54,6 @@ Try to draw on [viz-js.com](http://viz-js.com/).
 
 ## ToDo
 
-- [] NFA -> DFA
-- [] Draw a automaton on the browser
-- [] deal with POSIX Regular Expression
+- [ ] NFA -> DFA
+- [ ] Draw a automaton on the browser
+- [ ] deal with POSIX Regular Expression
