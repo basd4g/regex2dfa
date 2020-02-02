@@ -79,7 +79,7 @@ class NFA extends Graph {
     return nodeFinished;
   }
 
-  private bindNodesFinish():Node|undefined {
+  bindNodesFinish():Node|undefined {
     const nodesFinish = this.nodesFinish;
     if( nodesFinish.length === 0 ){
       return undefined;

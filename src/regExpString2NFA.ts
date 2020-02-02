@@ -37,7 +37,74 @@ const graphCreatorStringInAsteriskBar = (str:string):RegexNFA => {
     graphCreatorStringInAsterisk( strBeforeBar ),
     graphCreatorStringInAsteriskBar( strAfterBar )
   );
+};
+
+type mixedCell = string | RegexNFA;
+
+const graphCreatorParen = (str:string):RegexNFA => {
+
+  const mixedArray : mixedCell[] = str.split('');
+  while(true){
+    const indexOfRightParen = mixedArray.indexOf( ')' );
+    console.log( indexOfRightParen );
+
+    if ( indexOfRightParen === -1 ){
+      break;
+    }
+  
+    const indexOfCorrespondingLeftParen = mixedArray.lastIndexOf( '(', indexOfRightParen );
+    console.log( indexOfCorrespondingLeftParen );
+
+    const innerParenMixedArray = mixedArray.slice( indexOfCorrespondingLeftParen+1, indexOfRightParen );
+    const innerParenGraph = squashMixedArray( innerParenMixedArray );
+
+    if( indexOfRightParen+1 < mixedArray.length && mixedArray[indexOfRightParen+1] === '*' ) {
+      const nodeStart = innerParenGraph.nodeStart;
+      const nodeFinish = innerParenGraph.bindNodesFinish();
+      if ( nodeFinish === undefined ) {
+        throw new Error("You forgot finalize");
+      }
+      innerParenGraph.addEpsilonTransitionEdge(nodeFinish, nodeStart);
+    }
+
+    mixedArray.splice(indexOfCorrespondingLeftParen, indexOfRightParen - indexOfCorrespondingLeftParen + 1, innerParenGraph);
+  }
+  return squashMixedArray( mixedArray );
 }
+
+const squashMixedArray = (mixedArray:mixedCell[]):RegexNFA => {
+  if ( mixedArray.length === 1 && typeof mixedArray[0] !== 'string' ) {
+    return mixedArray[0];
+  }
+
+  let regexNFA = emptyGraph();
+  
+  let stack:string = "";
+  for ( let mixedCell of mixedArray ) {
+    if ( typeof mixedCell === 'string' ) {
+      stack += mixedCell;
+    } else {
+      regexNFA = connectGraphs( regexNFA, graphCreatorStringInAsteriskBar( stack ) );
+      stack = "";
+      regexNFA = connectGraphs( regexNFA, mixedCell );
+    }
+  }
+
+  regexNFA = connectGraphs( regexNFA, graphCreatorStringInAsteriskBar( stack ) );
+  return regexNFA
+};
+
+const graphRepeatOwn = (graph:RegexNFA):RegexNFA => {
+  const regexNFA = new RegexNFA();
+  let nodeHead = regexNFA.nodeStart;
+
+  nodeHead = regexNFA.addGraphRepeat(nodeHead, graph);
+
+  regexNFA.finalize(nodeHead);
+
+  return regexNFA;
+};
+
 
 const connectGraphsOr = ( graph0:RegexNFA, graph1:RegexNFA ):RegexNFA => {
   const regexNFA = new RegexNFA();
@@ -62,6 +129,12 @@ const connectGraphs = ( graphHead:RegexNFA, graphTail:RegexNFA ):RegexNFA => {
   return regexNFA;
 };
 
+const emptyGraph = ():RegexNFA => {
+  const regexNFA = new RegexNFA();
+  regexNFA.finalize( regexNFA.nodeStart );
+  return regexNFA;
+};
+
 const graphCreatorString = (str:string):RegexNFA => {
   const regexNFA = new RegexNFA();
   const nodeHead = regexNFA.addString(regexNFA.nodeStart, str);
@@ -71,6 +144,5 @@ const graphCreatorString = (str:string):RegexNFA => {
 
 
 export default (regExpString: string):RegexNFA => {
-//  return graphCreatorString(regExpString);
-  return graphCreatorStringInAsteriskBar( regExpString );
+  return graphCreatorParen( regExpString );
 }
