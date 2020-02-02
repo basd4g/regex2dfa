@@ -1,30 +1,84 @@
-import Graph from "./Graph";
 import Node from "./Node";
-
-interface DevidedNodes {
-  in: Node;
-  out:Node;
-};
+import Edge from "./Edge";
+import Graph from "./Graph";
 
 class NFA extends Graph {
-  // 存在するノードからε遷移するノードを作る。もとのノードからの有効辺は新しいノードが始点となるように付け替える。
-  cloneNode(originNode:Node):Node {
-    const newNodeIsFinish = originNode.isFinish;
-    const newNode = this.addNode(newNodeIsFinish);
-    originNode.isFinish = false;
 
-    const edge = this.addEdge(originNode, newNode, "ε");
-
-    const edgesFrom = this.edgesFrom(originNode);
-    edgesFrom.forEach( e => {
-      if( e.id !== edge.id ){
-        e.from = newNode;
-      }
-    });
-    return newNode;
+  addEpsilonTransitionNode(nodeFrom:Node):Node {
+    const nodeTo = this.addNode( false );
+    this.addEpsilonTransitionEdge( nodeFrom, nodeTo);
+    return nodeTo;
   }
 
-  bindNodesFinish():Node|undefined {
+  addEpsilonTransitionEdge(nodeFrom:Node, nodeTo:Node):Edge {
+    return this.addEdge(nodeFrom, nodeTo, "ε");
+  }
+
+  addGraph(nodeFrom:Node, graph:NFA):Node {
+    this.mergeNodes( graph.nodes );
+    this.mergeEdges( graph.edges );
+
+    const nodeStarted = graph.resetNodeStart();
+    const nodeFinished = graph.resetNodesFinish();
+
+    this.addEpsilonTransitionEdge( nodeFrom, nodeStarted );
+
+    return nodeFinished;
+  }
+
+  addGraphOr(nodeFrom:Node, graph0:NFA, graph1:NFA):Node {
+    const nodeBeforeRoot0 = this.addEpsilonTransitionNode(nodeFrom);
+    const nodeBeforeRoot1 = this.addEpsilonTransitionNode(nodeFrom);
+
+    const nodeAfterRoot0 = this.addGraph(nodeBeforeRoot0, graph0);
+    const nodeAfterRoot1 = this.addGraph(nodeBeforeRoot1, graph1);
+
+    const nodeAfter = this.addEpsilonTransitionNode(nodeAfterRoot0);
+    this.addEpsilonTransitionEdge(nodeAfterRoot1, nodeAfter);
+
+    return nodeAfter;
+  }
+
+  addGraphRepeat(nodeFrom:Node, graph:NFA):Node {
+    const nodeLoop = this.addEpsilonTransitionNode(nodeFrom);
+
+    const nodeEndGraph = this.addGraph(nodeLoop,graph);
+
+    this.addEpsilonTransitionEdge(nodeEndGraph, nodeLoop);
+
+    const nodeAfter = this.addEpsilonTransitionNode(nodeEndGraph);
+
+    return nodeAfter;
+  }
+
+  private mergeNodes(nodes:Node[]) {
+    this.nodes.push( ...nodes );
+  }
+
+  private mergeEdges(edges:Edge[]) {
+    this.edges.push( ...edges );
+  }
+
+  private resetNodeStart():Node {
+    const nodeStarted = this.nodeStart;
+    if ( nodeStarted === undefined ) {
+      throw new Error("Start node is not found.");
+    }
+    nodeStarted.isStart = false;
+    return nodeStarted;
+  }
+
+  private resetNodesFinish():Node {
+    const nodeFinished = this.bindNodesFinish();
+
+    if( nodeFinished === undefined ) {
+      throw new Error("Finish node is not found.");
+    }
+    nodeFinished.isFinish = false;
+    return nodeFinished;
+  }
+
+  private bindNodesFinish():Node|undefined {
     const nodesFinish = this.nodesFinish;
     if( nodesFinish.length === 0 ){
       return undefined;
@@ -33,74 +87,9 @@ class NFA extends Graph {
 
     nodesFinish.forEach( nodeFinish => {
       nodeFinish.isFinish = false;
-      this.addEdge( nodeFinish, newNodeFinish, "ε" );
+      this.addEpsilonTransitionEdge( nodeFinish, newNodeFinish );
     });
     return newNodeFinish;
-  }
-
-  connectGraphAfterOwn( connectingGraph:NFA ){
-    // 自身の受理状態をまとめる
-    const thisGraphNodeFinish = this.bindNodesFinish();
-    if( thisGraphNodeFinish === undefined ){
-      throw new Error("finish node is not found");
-    }
-
-    // 自身の受理状態を解除する
-    thisGraphNodeFinish.isFinish = false;
-
-    // つなげるグラフの初期状態を解除する
-    const connectingGraphNodeStart = connectingGraph.nodeStart
-    if( connectingGraphNodeStart === undefined ){
-      throw new Error("start node is not found");
-    }
-    connectingGraphNodeStart.isStart = false;
-
-    // node, edgeをmergeする。
-    this.nodes.push(...connectingGraph.nodes);
-    this.edges.push(...connectingGraph.edges);
-
-    // 自身の受理状態(だったもの)からつなげるグラフの初期状態(だったもの)へのε遷移を追加する。
-    this.addEdge(thisGraphNodeFinish, connectingGraphNodeStart, "ε");
-  }
-
-  devideNode(originNode:Node):DevidedNodes {
-    const newNodeIsFinish = originNode.isFinish;
-    const newNode = this.addNode(newNodeIsFinish);
-    originNode.isFinish = false;
-
-    const edgesFrom = this.edgesFrom(originNode);
-    edgesFrom.forEach( e => { e.from = newNode; });
-    
-    return {in:originNode, out:newNode};
-  }
-
-  replaceNodeWithGraph(before:Node, after:NFA){
-    // 置き換えるグラフの受理状態をまとめる
-    const afterGraphNodeFinish = after.bindNodesFinish();
-    if( afterGraphNodeFinish === undefined ){
-      throw new Error("finish node is not found");
-    }
-    // 置き換えるグラフの受理状態を解除する
-    afterGraphNodeFinish.isFinish = false;
-    
-    // 置き換えるグラフの初期状態を解除する
-    const afterGraphNodeStart = after.nodeStart;
-    if( afterGraphNodeStart === undefined ){
-      throw new Error("start node is not found.");
-    }
-    afterGraphNodeStart.isStart = false;
-    
-
-    // replacingNodeを分割する [ hoge -> replacing -> fuga ] => [ hoge -> devidedNode.in ], [ devidedNode.out -> fuga ]
-    const devidedNodes = this.devideNode(before);
-
-    // グラフのnode,edgeをmergeする
-    this.nodes.push(...after.nodes);
-    this.edges.push(...after.edges);
-
-    // devidedNode.in -> 置き換えるグラフの初期状態だったnode -> ... -> 置き換えるグラフの受理状態だったnode -> devidedNode.out
-    this.addEdge(devidedNodes.in, afterGraphNodeStart, "ε");
-    this.addEdge(afterGraphNodeFinish, devidedNodes.out, "ε");
   }
 }
 

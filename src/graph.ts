@@ -51,11 +51,7 @@ class Graph {
   }
 
   get nodeStart():Node|undefined {
-    const nodeStart = this.nodes.find( node => { return node.isStart == true });
-    if( nodeStart === undefined ){
-      return undefined;
-    }
-    return nodeStart;
+    return this.nodes.find( node => { return node.isStart == true });
   }
   
   get nodesFinish():Node[] {
