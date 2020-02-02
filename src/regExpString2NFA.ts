@@ -76,6 +76,29 @@ const squashMixedArray = (mixedArray:mixedCell[]):RegexNFA => {
   if ( mixedArray.length === 1 && typeof mixedArray[0] !== 'string' ) {
     return mixedArray[0];
   }
+  let parallelGraphs: RegexNFA[] = [];
+
+  let partOfMixedArray:mixedCell[]=[];
+  for (let mixedCell of mixedArray ) {
+    if( mixedCell === '|' ){
+      const graph = squashMixedArrayWithoutBar( partOfMixedArray );
+      partOfMixedArray = [];
+      parallelGraphs.push( graph );
+    } else {
+      partOfMixedArray.push( mixedCell );
+    }
+  }
+  const graph = squashMixedArrayWithoutBar( partOfMixedArray );
+  partOfMixedArray = [];
+  parallelGraphs.push( graph );
+
+  return connectGraphsParallel( parallelGraphs );
+}
+
+const squashMixedArrayWithoutBar = (mixedArray:mixedCell[]):RegexNFA => {
+  if ( mixedArray.length === 1 && typeof mixedArray[0] !== 'string' ) {
+    return mixedArray[0];
+  }
 
   let regexNFA = emptyGraph();
   
@@ -116,6 +139,24 @@ const connectGraphsOr = ( graph0:RegexNFA, graph1:RegexNFA ):RegexNFA => {
 
   return regexNFA;
 };
+
+const connectGraphsParallel = ( parallelGraphs:RegexNFA[] ):RegexNFA => {
+  if ( parallelGraphs.length === 0 ) {
+    throw new Error("parallelGraphs.length = 0");
+  }
+
+  while ( parallelGraphs.length > 1 ) {
+    const tail = parallelGraphs.pop();
+    const preTail = parallelGraphs.pop();
+    if ( tail === undefined || preTail === undefined ) {
+      throw new Error("tail or preTail is undefined");
+    }
+    const newTail = connectGraphsOr(preTail, tail);
+    parallelGraphs.push( newTail );
+  }
+  return parallelGraphs[0];
+  
+}
 
 const connectGraphs = ( graphHead:RegexNFA, graphTail:RegexNFA ):RegexNFA => {
   const regexNFA = new RegexNFA();
