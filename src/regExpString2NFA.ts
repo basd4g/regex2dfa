@@ -102,34 +102,16 @@ const squashMixedArrayWithoutBar = (mixedArray:mixedCell[]):RegexNFA => {
   return regexNFA
 };
 
-const connectGraphsOr = ( graph0:RegexNFA, graph1:RegexNFA ):RegexNFA => {
+const connectGraphsParallel = ( graphs:RegexNFA[] ):RegexNFA => {
   const regexNFA = new RegexNFA();
   let nodeHead = regexNFA.nodeStart;
 
-  nodeHead = regexNFA.addGraphOr(nodeHead, graph0, graph1);
+  nodeHead = regexNFA.addGraphsParallel(nodeHead, graphs);
 
   regexNFA.finalize(nodeHead);
 
   return regexNFA;
 };
-
-const connectGraphsParallel = ( parallelGraphs:RegexNFA[] ):RegexNFA => {
-  if ( parallelGraphs.length === 0 ) {
-    throw new Error("parallelGraphs.length = 0");
-  }
-
-  while ( parallelGraphs.length > 1 ) {
-    const tail = parallelGraphs.pop();
-    const preTail = parallelGraphs.pop();
-    if ( tail === undefined || preTail === undefined ) {
-      throw new Error("tail or preTail is undefined");
-    }
-    const newTail = connectGraphsOr(preTail, tail);
-    parallelGraphs.push( newTail );
-  }
-  return parallelGraphs[0];
-  
-}
 
 const connectGraphs = ( graphHead:RegexNFA, graphTail:RegexNFA ):RegexNFA => {
   const regexNFA = new RegexNFA();

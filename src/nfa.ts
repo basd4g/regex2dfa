@@ -27,17 +27,14 @@ class NFA extends Graph {
     return nodeFinished;
   }
 
-  addGraphOr(nodeFrom:Node, graph0:NFA, graph1:NFA):Node {
-    const nodeBeforeRoot0 = this.addEpsilonTransitionNode(nodeFrom);
-    const nodeBeforeRoot1 = this.addEpsilonTransitionNode(nodeFrom);
-
-    const nodeAfterRoot0 = this.addGraph(nodeBeforeRoot0, graph0);
-    const nodeAfterRoot1 = this.addGraph(nodeBeforeRoot1, graph1);
-
-    const nodeAfter = this.addEpsilonTransitionNode(nodeAfterRoot0);
-    this.addEpsilonTransitionEdge(nodeAfterRoot1, nodeAfter);
-
-    return nodeAfter;
+  addGraphsParallel(nodeFrom:Node, graphs:NFA[]):Node {
+    const nodeAfterBinded = this.addNode(false);
+    graphs.forEach( graph => {
+      const nodeBeforeGraph = this.addEpsilonTransitionNode( nodeFrom );
+      const nodeAfterGraph = this.addGraph( nodeBeforeGraph, graph );
+      this.addEpsilonTransitionEdge( nodeAfterGraph, nodeAfterBinded );
+    });
+    return nodeAfterBinded;
   }
 
   addGraphRepeat(nodeFrom:Node, graph:NFA):Node {
