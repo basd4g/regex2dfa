@@ -24,21 +24,6 @@ const graphCreatorStringInAsterisk = (str:string):RegexNFA => {
   return regexNFA;
 };
 
-const graphCreatorStringInAsteriskBar = (str:string):RegexNFA => {
-  const indexOfBar = str.indexOf( '|' );
-  if( indexOfBar === -1 ){
-    return graphCreatorStringInAsterisk( str );
-  }
-
-  const strBeforeBar = str.slice(0, indexOfBar);
-  const strAfterBar = str.slice(indexOfBar+1);
-
-  return connectGraphsOr(
-    graphCreatorStringInAsterisk( strBeforeBar ),
-    graphCreatorStringInAsteriskBar( strAfterBar )
-  );
-};
-
 type mixedCell = string | RegexNFA;
 
 const graphCreatorParen = (str:string):RegexNFA => {
@@ -107,27 +92,15 @@ const squashMixedArrayWithoutBar = (mixedArray:mixedCell[]):RegexNFA => {
     if ( typeof mixedCell === 'string' ) {
       stack += mixedCell;
     } else {
-      regexNFA = connectGraphs( regexNFA, graphCreatorStringInAsteriskBar( stack ) );
+      regexNFA = connectGraphs( regexNFA, graphCreatorStringInAsterisk( stack ) );
       stack = "";
       regexNFA = connectGraphs( regexNFA, mixedCell );
     }
   }
 
-  regexNFA = connectGraphs( regexNFA, graphCreatorStringInAsteriskBar( stack ) );
+  regexNFA = connectGraphs( regexNFA, graphCreatorStringInAsterisk( stack ) );
   return regexNFA
 };
-
-const graphRepeatOwn = (graph:RegexNFA):RegexNFA => {
-  const regexNFA = new RegexNFA();
-  let nodeHead = regexNFA.nodeStart;
-
-  nodeHead = regexNFA.addGraphRepeat(nodeHead, graph);
-
-  regexNFA.finalize(nodeHead);
-
-  return regexNFA;
-};
-
 
 const connectGraphsOr = ( graph0:RegexNFA, graph1:RegexNFA ):RegexNFA => {
   const regexNFA = new RegexNFA();
