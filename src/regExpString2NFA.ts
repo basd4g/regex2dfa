@@ -3,27 +3,6 @@ import Edge from "./Edge";
 import NFA from "./NFA";
 import RegexNFA from "./RegexNFA";
 
-const graphCreatorStringInAsterisk = (str:string):RegexNFA => {
-  const regexNFA = new RegexNFA();
-  let nodeHead = regexNFA.nodeStart;
-
-  const charactors = str.split('');
-
-  charactors.forEach( (c,idx) => {
-    if ( c === '*' ) {
-      return;
-    }
-    if ( idx+1 < charactors.length && charactors[idx+1] === '*' ) {
-      nodeHead = regexNFA.addCharactorRepeat( nodeHead, c );
-      return;
-    }
-    nodeHead = regexNFA.addCharactor(nodeHead, c );
-  });
-  regexNFA.finalize( nodeHead );
-
-  return regexNFA;
-};
-
 type mixedCell = string | RegexNFA;
 
 const graphCreatorParen = (str:string):RegexNFA => {
@@ -56,6 +35,34 @@ const graphCreatorParen = (str:string):RegexNFA => {
   }
   return squashMixedArray( mixedArray );
 }
+
+const graphCreatorStringInAsterisk = (str:string):RegexNFA => {
+  const regexNFA = new RegexNFA();
+  let nodeHead = regexNFA.nodeStart;
+
+  const charactors = str.split('');
+
+  charactors.forEach( (c,idx) => {
+    if ( c === '*' ) {
+      return;
+    }
+    if ( idx+1 < charactors.length && charactors[idx+1] === '*' ) {
+      nodeHead = regexNFA.addCharactorRepeat( nodeHead, c );
+      return;
+    }
+    nodeHead = regexNFA.addCharactor(nodeHead, c );
+  });
+  regexNFA.finalize( nodeHead );
+
+  return regexNFA;
+};
+
+const graphCreatorString = (str:string):RegexNFA => {
+  const regexNFA = new RegexNFA();
+  const nodeHead = regexNFA.addString(regexNFA.nodeStart, str);
+  regexNFA.finalize(nodeHead);
+  return regexNFA;
+};
 
 const squashMixedArray = (mixedArray:mixedCell[]):RegexNFA => {
   if ( mixedArray.length === 1 && typeof mixedArray[0] !== 'string' ) {
@@ -131,15 +138,38 @@ const emptyGraph = ():RegexNFA => {
   return regexNFA;
 };
 
-const graphCreatorString = (str:string):RegexNFA => {
-  const regexNFA = new RegexNFA();
-  const nodeHead = regexNFA.addString(regexNFA.nodeStart, str);
-  regexNFA.finalize(nodeHead);
+const shrinkEpsilon = ( regexNFA:RegexNFA ):RegexNFA => {
+  return shrinkPreEpsilon( shrinkPostEpsilon( regexNFA ) );
+};
+
+
+// 単一の遷移のみから遷移して、単一のε遷移のみを持つノードは、前者のエッジを付け替えて削除
+const shrinkPostEpsilon = (regexNFA:RegexNFA):RegexNFA => {
+  const nodes = regexNFA.nodes;
+
+  const nodesToDelete = nodes.filter( node => {
+    if ( regexNFA.edgesTo(node).length !== 1 ) {
+      return false;
+    }
+    const edges = regexNFA.edgesFrom(node);
+    if ( edges.length === 1 && edges[0].value === "ε") {
+      return true;
+    }
+    return false;
+  });
+
+  nodesToDelete.forEach( nodeToDelete => {
+    const edgeToDelete = regexNFA.edgesFrom( nodeToDelete )[0];
+    const edgeToChange = regexNFA.edgesTo( nodeToDelete )[0];
+    edgeToChange.to = edgeToDelete.to;
+    regexNFA.deleteEdge( edgeToDelete );
+    regexNFA.deleteNode( nodeToDelete );
+  });
   return regexNFA;
 };
 
 // 単一のε遷移のみから遷移して、単一の遷移のみを持つノードは、後者のエッジを付け替えて削除
-const shrinkEpsilon = (regexNFA:RegexNFA):RegexNFA => {
+const shrinkPreEpsilon = (regexNFA:RegexNFA):RegexNFA => {
   const nodes = regexNFA.nodes;
 
   const nodesToDelete = nodes.filter( node => {
