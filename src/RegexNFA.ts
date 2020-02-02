@@ -1,25 +1,20 @@
-import Node from "./node";
-import Edge from "./edge";
-import NFA from "./nfa";
+import Node from "./Node";
+import Edge from "./Edge";
+import NFA from "./NFA";
 
-class NFAcreator {
-  graph:NFA;
-  
-  constructor() {
-    this.graph = new NFA();
-  }
+class RegexNFA extends NFA{
 
   get nodeStart():Node{
-    const nodeStart = this.graph.nodeStart;
-    if( nodeStart === undefined){
-      throw new Error("start node is not generated");
+    const nodeStart = super.nodeStart;
+    if ( nodeStart === undefined ) {
+      throw new Error("node start is undefined");
     }
     return nodeStart;
   }
 
   addCharactor(nodeFrom:Node, charactor:string):Node {
-   const node = this.graph.addNode(false);
-   this.graph.addEdge(nodeFrom, node, charactor);
+   const node = this.addNode(false);
+   this.addEdge(nodeFrom, node, charactor);
    return node;
   }
 
@@ -27,7 +22,7 @@ class NFAcreator {
     return this.addCharactor(nodeFrom, "ε");
   }
   addEpsilonTransitionEdge(nodeFrom:Node, nodeTo:Node):Edge {
-    return this.graph.addEdge(nodeFrom, nodeTo, "ε");
+    return this.addEdge(nodeFrom, nodeTo, "ε");
   }
 
   addString(nodeFrom:Node, str:string):Node {
@@ -40,37 +35,11 @@ class NFAcreator {
 
     return nodeHead;
   }
-  /*
 
-  addStringRepeat(nodeFrom:Node, str:string):Node {
-    
-    const nodeLoop = this.addEpsilonTransitionNode(nodeFrom);
-
-    const nodeEndStr = this.addString(nodeLoop, str);
-
-    this.addEpsilonTransitionEdge(nodeEndStr, nodeLoop);
-
-    const nodeAfter = this.addEpsilonTransitionNode(nodeEndStr);
-    return nodeAfter;
-  }
-
-  addStringOr(nodeFrom:Node, string0:string, string1:string):Node {
-    const nodeBeforeRoot0 = this.addEpsilonTransitionNode(nodeFrom);
-    const nodeBeforeRoot1 = this.addEpsilonTransitionNode(nodeFrom);
-
-    const nodeAfterRoot0 = this.addString(nodeBeforeRoot0, string0);
-    const nodeAfterRoot1 = this.addString(nodeBeforeRoot1, string1);
-
-    const nodeAfter = this.addEpsilonTransitionNode(nodeAfterRoot0);
-    this.addEpsilonTransitionEdge(nodeAfterRoot1, nodeAfter);
-
-    return nodeAfter;
-  }
-  */
   addGraph(nodeFrom:Node, graph:NFA):Node {
     const nodeReplacing = this.addEpsilonTransitionNode(nodeFrom);
     const nodeAfter = this.addEpsilonTransitionNode(nodeReplacing);
-    this.graph.replaceNodeWithGraph(nodeReplacing, graph);
+    this.replaceNodeWithGraph(nodeReplacing, graph);
     return nodeAfter;
   }
 
@@ -104,4 +73,4 @@ class NFAcreator {
   }
 }
 
-export default NFAcreator;
+export default RegexNFA;

@@ -1,5 +1,5 @@
-import Graph from "./graph";
-import Node from "./node";
+import Graph from "./Graph";
+import Node from "./Node";
 
 interface DevidedNodes {
   in: Node;

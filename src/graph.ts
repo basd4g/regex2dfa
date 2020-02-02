@@ -1,5 +1,5 @@
-import Node from "./node";
-import Edge from "./edge";
+import Node from "./Node";
+import Edge from "./Edge";
 
 class Graph {
   nodes: Node[];

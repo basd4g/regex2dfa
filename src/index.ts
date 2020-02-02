@@ -25,7 +25,7 @@ if( !validateParenthesis( input ) ){
   process.exit(0);
 }
 
-const NFA = regExpString2NFA(input);
-console.log(NFA.graphvizString);
+const regexNFA = regExpString2NFA(input);
+console.log(regexNFA.graphvizString);
 
 

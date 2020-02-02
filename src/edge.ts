@@ -1,4 +1,4 @@
-import Node from "./node";
+import Node from "./Node";
 
 class Edge {
   private static idCounter:number = 0;
@@ -17,6 +17,7 @@ class Edge {
     return `e${this.id}`;
   }
 }
+
 class EdgeGraphviz extends Edge {
   get graphvizString():string{
     return `${this.from.name} -> ${this.to.name} [label = "${this.value}"];`;
