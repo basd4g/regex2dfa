@@ -137,6 +137,7 @@ const emptyGraph = ():RegexNFA => {
   return regexNFA;
 };
 
-export default (regExpString: string):RegexNFA => {
-  return shrinkEpsilon(graphCreatorParen( regExpString ));
+export default (regexString: string):RegexNFA => {
+  const regexNFA = graphCreatorParen( regexString )
+  return shrinkEpsilon( regexNFA );
 }
