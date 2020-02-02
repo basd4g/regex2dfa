@@ -183,7 +183,31 @@ const graphCreatorString = (str:string):RegexNFA => {
   return regexNFA;
 };
 
+// 単一のε遷移のみから遷移して、単一の遷移のみを持つノードは、後者のエッジを付け替えて削除
+const shrinkEpsilon = (regexNFA:RegexNFA):RegexNFA => {
+  const nodes = regexNFA.nodes;
+
+  const nodesToDelete = nodes.filter( node => {
+    if ( regexNFA.edgesFrom(node).length !== 1 ) {
+      return false;
+    }
+    const edges = regexNFA.edgesTo(node);
+    if ( edges.length === 1 && edges[0].value === "ε") {
+      return true;
+    }
+    return false;
+  });
+
+  nodesToDelete.forEach( nodeToDelete => {
+    const edgeToDelete = regexNFA.edgesTo( nodeToDelete )[0];
+    const edgeToChange = regexNFA.edgesFrom( nodeToDelete )[0];
+    edgeToChange.from = edgeToDelete.from;
+    regexNFA.deleteEdge( edgeToDelete );
+    regexNFA.deleteNode( nodeToDelete );
+  });
+  return regexNFA;
+};
 
 export default (regExpString: string):RegexNFA => {
-  return graphCreatorParen( regExpString );
+  return shrinkEpsilon(graphCreatorParen( regExpString ));
 }
