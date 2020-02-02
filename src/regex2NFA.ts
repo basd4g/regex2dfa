@@ -2,7 +2,6 @@ import Node from "./Node";
 import Edge from "./Edge";
 import NFA from "./NFA";
 import RegexNFA from "./RegexNFA";
-import shrinkEpsilon from "./shrinkEpsilon";
 
 type mixedCell = string | RegexNFA;
 
@@ -137,7 +136,9 @@ const emptyGraph = ():RegexNFA => {
   return regexNFA;
 };
 
-export default (regexString: string):RegexNFA => {
+const regex2NFA = (regexString: string):RegexNFA => {
   const regexNFA = graphCreatorParen( regexString )
-  return shrinkEpsilon( regexNFA );
+  return regexNFA;
 }
+
+export default regex2NFA;
