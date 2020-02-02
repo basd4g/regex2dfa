@@ -10,14 +10,12 @@ const graphCreatorParen = (str:string):RegexNFA => {
   const mixedArray : mixedCell[] = str.split('');
   while(true){
     const indexOfRightParen = mixedArray.indexOf( ')' );
-    console.log( indexOfRightParen );
 
     if ( indexOfRightParen === -1 ){
       break;
     }
   
     const indexOfCorrespondingLeftParen = mixedArray.lastIndexOf( '(', indexOfRightParen );
-    console.log( indexOfCorrespondingLeftParen );
 
     const innerParenMixedArray = mixedArray.slice( indexOfCorrespondingLeftParen+1, indexOfRightParen );
     const innerParenGraph = squashMixedArray( innerParenMixedArray );
