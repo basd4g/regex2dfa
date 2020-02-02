@@ -37,18 +37,6 @@ class NFA extends Graph {
     return nodeAfterBinded;
   }
 
-  addGraphRepeat(nodeFrom:Node, graph:NFA):Node {
-    const nodeLoop = this.addEpsilonTransitionNode(nodeFrom);
-
-    const nodeEndGraph = this.addGraph(nodeLoop,graph);
-
-    this.addEpsilonTransitionEdge(nodeEndGraph, nodeLoop);
-
-    const nodeAfter = this.addEpsilonTransitionNode(nodeEndGraph);
-
-    return nodeAfter;
-  }
-
   private mergeNodes(nodes:Node[]) {
     this.nodes.push( ...nodes );
   }
