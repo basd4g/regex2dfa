@@ -80,4 +80,11 @@ class NFA extends Graph {
   }
 }
 
-export default NFA;
+class ExtendedNFA extends NFA {
+  nodesConnectingEpsilon(nodeFrom: Node):Node[] {
+    const epsilonEdges = this.edges.filter( e => e.value === Epsilon && e.from === nodeFrom );
+    return  epsilonEdges.map( e => { return e.nodeTo });
+  }
+}
+
+export default ExtendedNFA;
