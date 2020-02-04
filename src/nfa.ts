@@ -1,6 +1,7 @@
 import Node from "./Node";
 import Edge from "./Edge";
 import Graph from "./Graph";
+import Epsilon from "./Epsilon";
 
 class NFA extends Graph {
 
@@ -11,7 +12,7 @@ class NFA extends Graph {
   }
 
   addEpsilonTransitionEdge(nodeFrom:Node, nodeTo:Node):Edge {
-    return this.addEdge(nodeFrom, nodeTo, "ε");
+    return this.addEdge(nodeFrom, nodeTo, Epsilon);
   }
 
   addGraph(nodeFrom:Node, graph:NFA):Node {
