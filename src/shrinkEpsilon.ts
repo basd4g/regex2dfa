@@ -1,7 +1,7 @@
 import RegexNFA from "./RegexNFA";
 
-const shrinkEpsilon = ( regexNFA:RegexNFA ):RegexNFA => {
-  return shrinkPreEpsilon( shrinkPostEpsilon( regexNFA ) );
+const shrinkEpsilon = ( regexNFA:RegexNFA ) => {
+  shrinkPreEpsilon( shrinkPostEpsilon( regexNFA ) );
 };
 
 
