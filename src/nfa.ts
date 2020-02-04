@@ -81,9 +81,29 @@ class NFA extends Graph {
 }
 
 class ExtendedNFA extends NFA {
-  nodesConnectingEpsilon(nodeFrom: Node):Node[] {
+  nodesTouchingWithEpsilon(nodeFrom: Node):Node[] {
     const epsilonEdges = this.edges.filter( e => e.value === Epsilon && e.from === nodeFrom );
-    return  epsilonEdges.map( e => { return e.nodeTo });
+    return  epsilonEdges.map( e => { return e.to });
+  }
+  nodesConnectingWithEpsilon(nodeFrom: Node):Node[] {
+    const nodesWillCheck:Node[] = [ nodeFrom ];
+    const nodesChecked:Node[] = [];
+
+    while( nodesWillCheck.length > 0 ) {
+      const nodeChecking = nodesWillCheck.pop();
+      if( nodeChecking === undefined ){
+        break;
+      }
+      nodesChecked.push( nodeChecking );
+      
+      const nodesTouchingWithEpsilon = this.nodesTouchingWithEpsilon( nodeChecking );
+      const newNodesWillCheck = nodesTouchingWithEpsilon.filter( node => {
+        return nodesWillCheck.indexOf(node) === -1 && nodesChecked.indexOf(node) === -1;
+      });
+      nodesWillCheck.push( ...newNodesWillCheck );
+    }
+
+    return nodesChecked;
   }
 }
 

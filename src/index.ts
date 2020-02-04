@@ -12,6 +12,14 @@ if( typeof input !== 'string' || input.length === 0 || !validate(input)){
 const regexNFA = regex2NFA( input );
 shrinkEpsilon( regexNFA );
 
+console.log( "nodes connecting epsilon: Start");
+regexNFA.nodes.forEach( node => {
+
+  const nodes = regexNFA.nodesConnectingWithEpsilon(node);
+  console.log(nodes.map( n => n.id ));
+});
+console.log( "nodes connecting epsilon: End");
+
 const dfa = nfa2dfa( regexNFA );
 
 console.log( dfa.graphvizString );
